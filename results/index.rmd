@@ -13,8 +13,6 @@ library(flexdashboard)
 Column
 -----------------------------------------------------------------------
 
-### Chart A
+### Chart A 
 
-```{r}
-knitr::include_url("market_map.html", height = 600)
-```
+<iframe src="market_map.html" width="100%" height="100%"></iframe>
