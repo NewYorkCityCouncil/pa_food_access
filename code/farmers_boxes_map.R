@@ -60,7 +60,8 @@ searchOptions
                                                   textsize = "15px",
                                                   direction = "center",
                                                   style = list(color = "#0004",
-                                                               `font-family` = "'Open Sans', sans-serif"))) %>% 
+                                                               `font-family` = "'Open Sans', sans-serif",
+                                                               `font-weight` = "bold"))) %>% 
     addSearchOSM(options = list(position = "topright", collapsed = FALSE, zoom = 14, marker = TRUE)) %>% 
     addControlGPS(options = gpsOptions(autoCenter = TRUE, setView = TRUE, maxZoom = 14)) %>% 
     htmlwidgets::prependContent(htmltools::tags$style("@import url('https://fonts.googleapis.com/css?family=Open+Sans'); .leaflet-control {font-family: 'Open Sans', sans-serif;}"))
