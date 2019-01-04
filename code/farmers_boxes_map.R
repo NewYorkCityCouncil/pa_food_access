@@ -2,6 +2,7 @@ library(leaflet)
 library(tidyverse)
 library(councildown)
 library(lubridate)
+library(leaflet.extras)
 
 source("code/load_farmers_boxes.R")
 
@@ -30,18 +31,41 @@ to_map <- markets_boxes %>%
                                  start,
                                  end,
                                  address,
-                                 accepts_ebt), ~paste("<a href='", ..3, "' target='_blank'>", ..1, "</a>", "<br>",
-                                                  "<small><em>", ..4, "-",  ..5, "<br>", ..6, "</small></em>",
-                                                  "<hr>", 
-                                                  knitr::kable(..2, format = "html"), "<br>",
-                                                  "EBT:", ifelse(..7, "Yes", "No")))) 
-market_map <- to_map %>%     
+                                 accepts_ebt), ~paste("<div style=\"font-family:'Open Sans', sans-serif;\">","<a href='", ..3, "' target='_blank'>", ..1, "</a>", "<br>",
+                                                      "<small><em>", ..4, "-",  ..5, "<br>", ..6, "</small></em>",
+                                                      "<hr>", 
+                                                      knitr::kable(..2, format = "html"), "<br>",
+                                                      "EBT:", ifelse(..7, "Yes", "No"),
+                                                      "</div>"))) 
+
+dists <- st_read("https://data.cityofnewyork.us/api/geospatial/yusd-j4xi?method=export&format=GeoJSON") %>% 
+  st_transform(st_crs(to_map)) %>% 
+  st_simplify()
+
+searchOptions
+
+
+(market_map <- to_map %>% 
   leaflet() %>% 
-  addProviderTiles("CartoDB.Positron") %>% 
-  addCircles(color = ~pal(service_type), radius = 1,
-             popup = ~caption) %>% 
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(data = dists, fill = FALSE, weight = .5, color = "black", opacity = .2) %>% 
+  addCircles(color = ~pal(service_type), radius = 1.5,
+             popup = ~caption,
+             group = "markets") %>%
   addLegend(pal = pal, values = ~ service_type,
-            title = "", position = "bottomleft")
+            title = "", position = "bottomleft") %>%
+  addLabelOnlyMarkers(data = dists %>% st_centroid(), label = ~coun_dist,
+                      labelOptions = labelOptions(permanent = TRUE, noHide = TRUE, 
+                                                  textOnly = TRUE,
+                                                  textsize = "15px",
+                                                  direction = "center",
+                                                  style = list(color = "#0004",
+                                                               `font-family` = "'Open Sans', sans-serif"))) %>% 
+    addSearchOSM(options = list(position = "topright", collapsed = FALSE, zoom = 14, marker = TRUE)) %>% 
+    addControlGPS(options = gpsOptions(autoCenter = TRUE, setView = TRUE, maxZoom = 14)) %>% 
+    htmlwidgets::prependContent(htmltools::tags$style("@import url('https://fonts.googleapis.com/css?family=Open+Sans'); .leaflet-control {font-family: 'Open Sans', sans-serif;}"))
+)
 
 htmlwidgets::saveWidget(market_map, "market_map.html")
 file.rename("market_map.html", "results/market_map.html")
+
