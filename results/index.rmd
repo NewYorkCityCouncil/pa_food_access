@@ -1,0 +1,20 @@
+---
+title: "Test"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+```
+
+Column
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+knitr::include_url("market_map.html", height = 600)
+```
