@@ -47,7 +47,7 @@ searchOptions
 
 (market_map <- to_map %>% 
   leaflet() %>% 
-  addProviderTiles("CartoDB.Positron") %>%
+  addTiles(urlTemplate = "//cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png") %>%
   addPolygons(data = dists, fill = FALSE, weight = .5, color = "black", opacity = .2) %>% 
   addCircles(color = ~pal(service_type), radius = 1.5,
              popup = ~caption,
