@@ -86,7 +86,7 @@ searchOptions
   addLabelOnlyMarkers(data = dists %>% st_centroid(), label = ~coun_dist,
                       labelOptions = labelOptions(permanent = TRUE, noHide = TRUE, 
                                                   textOnly = TRUE,
-                                                  textsize = "15px",
+                                                  textsize = "13px",
                                                   direction = "center",
                                                   style = list(color = "#0004",
                                                                `font-family` = "'Open Sans', sans-serif",
