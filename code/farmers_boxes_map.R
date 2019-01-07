@@ -8,6 +8,40 @@ source("code/load_farmers_boxes.R")
 
 pal <- colorFactor(nycc_pal("cool")(2), domain = markets_boxes$service_type)
 
+tmp <- quos(facilityname,
+            hours,
+            website,
+            start,
+            end,
+            address,
+            accepts_ebt)
+
+
+make_caption <- function(facilityname,
+                         hours,
+                         website,
+                         start,
+                         end,
+                         address,
+                         accepts_ebt) {
+  
+  if (!is.na(website)){
+    out <- paste("<div style=\"font-family:'Open Sans', sans-serif;\">","<a href='", website, "' target='_blank'>", facilityname, "</a>", "<br>",
+                 "<small><em>", start, "-",  end, "<br>", address, "</small></em>",
+                 "<hr>", 
+                 knitr::kable(hours, format = "html"), "<br>",
+                 "EBT:", ifelse(accepts_ebt, "Yes", "No"),
+                 "</div>")
+  } else {
+    out <- paste("<div style=\"font-family:'Open Sans', sans-serif;\">", facilityname, "<br>",
+                 "<small><em>", start, "-",  end, "<br>", address, "</small></em>",
+                 "<hr>", 
+                 knitr::kable(hours, format = "html"), "<br>",
+                 "EBT:", ifelse(accepts_ebt, "Yes", "No"),
+                 "</div>")
+    }
+}
+
 to_map <- markets_boxes %>% 
   # as_tibble() %>% 
   mutate_at(vars(sunday, monday, tuesday, wednesday, thursday, friday, saturday), as.character) %>% 
@@ -31,12 +65,7 @@ to_map <- markets_boxes %>%
                                  start,
                                  end,
                                  address,
-                                 accepts_ebt), ~paste("<div style=\"font-family:'Open Sans', sans-serif;\">","<a href='", ..3, "' target='_blank'>", ..1, "</a>", "<br>",
-                                                      "<small><em>", ..4, "-",  ..5, "<br>", ..6, "</small></em>",
-                                                      "<hr>", 
-                                                      knitr::kable(..2, format = "html"), "<br>",
-                                                      "EBT:", ifelse(..7, "Yes", "No"),
-                                                      "</div>"))) 
+                                 accepts_ebt), make_caption)) 
 
 dists <- st_read("https://data.cityofnewyork.us/api/geospatial/yusd-j4xi?method=export&format=GeoJSON") %>% 
   st_transform(st_crs(to_map)) %>% 
