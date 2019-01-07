@@ -8,15 +8,6 @@ source("code/load_farmers_boxes.R")
 
 pal <- colorFactor(nycc_pal("cool")(2), domain = markets_boxes$service_type)
 
-tmp <- quos(facilityname,
-            hours,
-            website,
-            start,
-            end,
-            address,
-            accepts_ebt)
-
-
 make_caption <- function(facilityname,
                          hours,
                          website,
@@ -70,8 +61,6 @@ to_map <- markets_boxes %>%
 dists <- st_read("https://data.cityofnewyork.us/api/geospatial/yusd-j4xi?method=export&format=GeoJSON") %>% 
   st_transform(st_crs(to_map)) %>% 
   st_simplify()
-
-searchOptions
 
 
 (market_map <- to_map %>% 
