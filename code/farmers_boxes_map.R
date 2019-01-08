@@ -30,8 +30,11 @@ make_caption <- function(facilityname,
                  knitr::kable(hours, format = "html"), "<br>",
                  "EBT:", ifelse(accepts_ebt, "Yes", "No"),
                  "</div>")
-    }
+  }
+  
+  return(out)
 }
+
 
 to_map <- markets_boxes %>% 
   # as_tibble() %>% 
@@ -58,31 +61,18 @@ to_map <- markets_boxes %>%
                                  address,
                                  accepts_ebt), make_caption)) 
 
-dists <- st_read("https://data.cityofnewyork.us/api/geospatial/yusd-j4xi?method=export&format=GeoJSON") %>% 
-  st_transform(st_crs(to_map)) %>% 
-  st_simplify()
-
 
 (market_map <- to_map %>% 
   leaflet() %>% 
-  addTiles(urlTemplate = "//cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png") %>%
+  addCouncilStyle() %>% 
   addPolygons(data = dists, fill = FALSE, weight = .5, color = "black", opacity = .2) %>% 
   addCircles(color = ~pal(service_type), radius = 1.5,
              popup = ~caption,
              group = "markets") %>%
   addLegend(pal = pal, values = ~ service_type,
             title = "", position = "bottomleft") %>%
-  addLabelOnlyMarkers(data = dists %>% st_centroid(), label = ~coun_dist,
-                      labelOptions = labelOptions(permanent = TRUE, noHide = TRUE, 
-                                                  textOnly = TRUE,
-                                                  textsize = "13px",
-                                                  direction = "center",
-                                                  style = list(color = "#0004",
-                                                               `font-family` = "'Open Sans', sans-serif",
-                                                               `font-weight` = "bold"))) %>% 
     addSearchOSM(options = list(position = "topright", collapsed = FALSE, zoom = 14, marker = TRUE)) %>% 
-    addControlGPS(options = gpsOptions(autoCenter = TRUE, setView = TRUE, maxZoom = 14)) %>% 
-    htmlwidgets::prependContent(htmltools::tags$style("@import url('https://fonts.googleapis.com/css?family=Open+Sans'); .leaflet-control {font-family: 'Open Sans', sans-serif;}"))
+    addControlGPS(options = gpsOptions(autoCenter = TRUE, setView = TRUE, maxZoom = 14))
 )
 
 htmlwidgets::saveWidget(market_map, "market_map.html")
