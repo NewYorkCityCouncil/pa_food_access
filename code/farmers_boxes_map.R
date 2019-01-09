@@ -76,7 +76,7 @@ names(bounds) <- NULL
 (market_map <- to_map %>% 
     leaflet() %>% 
     addCouncilStyle() %>% 
-    addCircleMarkers(color = ~pal(service_type), radius = 2,
+    addCircleMarkers(color = ~pal(service_type), radius = 4,
                popup = ~councilPopup(caption),
                group = "markets",
                fillOpacity = 1,
