@@ -84,7 +84,7 @@ names(bounds) <- NULL
                opacity = 0) %>%
     addLegend(pal = pal, values = ~ service_type,
               title = "", position = "bottomleft") %>%
-    addSearchOSM(options = list(position = "topright", collapsed = FALSE, zoom = 14, marker = TRUE)) %>% 
+    addSearchGoogle(apikey = 'AIzaSyD82n6fe0gU05Fv4G3HUlYbYDMq1cOUS9U', options = list(position = "topright", collapsed = FALSE, zoom = 14, marker = TRUE)) %>% 
     addControlGPS(options = gpsOptions(autoCenter = TRUE, setView = TRUE, maxZoom = 14)) %>% 
     setView(mean(bounds[c(1,3)]), mean(bounds[c(2,4)]), zoom = 10.5)
 )
