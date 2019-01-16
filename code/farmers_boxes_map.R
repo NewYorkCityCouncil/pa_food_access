@@ -97,7 +97,7 @@ names(bounds) <- NULL
     identity()
 )
 
-htmlwidgets::saveWidget(market_map, "market_map.html", selfcontained = TRUE)
+htmlwidgets::saveWidget(market_map, "market_map.html", selfcontained = FALSE)
 file.rename("market_map.html", "results/market_map.html")
 file.rename("market_map_files", "results/market_map_files")
 
