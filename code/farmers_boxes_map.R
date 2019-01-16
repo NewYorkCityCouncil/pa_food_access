@@ -3,8 +3,11 @@ library(tidyverse)
 library(councildown)
 library(lubridate)
 library(leaflet.extras)
+library(htmltools)
+library(htmlwidgets)
 
 source("code/load_farmers_boxes.R")
+source("code/util.R")
 
 pal <- colorFactor(nycc_pal("cool")(2), domain = markets_boxes$service_type)
 
@@ -84,11 +87,17 @@ names(bounds) <- NULL
                opacity = 0) %>%
     addLegend(pal = pal, values = ~ service_type,
               title = "", position = "bottomleft") %>%
-    addSearchGoogle(apikey = 'AIzaSyD82n6fe0gU05Fv4G3HUlYbYDMq1cOUS9U', options = list(position = "topright", collapsed = FALSE, zoom = 14, marker = TRUE)) %>% 
+    # addSearchGoogle(apikey = 'AIzaSyD82n6fe0gU05Fv4G3HUlYbYDMq1cOUS9U', options = list(position = "topright", collapsed = FALSE, zoom = 14, marker = TRUE)) %>% 
     addControlGPS(options = gpsOptions(autoCenter = TRUE, setView = TRUE, maxZoom = 14)) %>% 
-    setView(mean(bounds[c(1,3)]), mean(bounds[c(2,4)]), zoom = 10.5)
+    setView(mean(bounds[c(1,3)]), mean(bounds[c(2,4)]), zoom = 10.5) %>% 
+    registerPlugin(geocoder) %>% 
+    registerPlugin(fontawsome_markers) %>% 
+    onRender(geocode_js, data = list(key = Sys.getenv("GEOCODE_API_KEY"))) %>%
+    prependContent(tags$link(href = "https://use.fontawesome.com/releases/v5.0.8/css/all.css", rel = "stylesheet")) %>% 
+    identity()
 )
 
-htmlwidgets::saveWidget(market_map, "market_map.html")
+htmlwidgets::saveWidget(market_map, "market_map.html", selfcontained = TRUE)
 file.rename("market_map.html", "results/market_map.html")
+file.rename("market_map_files", "results/market_map_files")
 
