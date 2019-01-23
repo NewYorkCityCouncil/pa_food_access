@@ -106,14 +106,14 @@ names(bounds) <- NULL
     addCouncilStyle() %>% 
     addCircleMarkers(color = ~pal(type), radius = 4,
                popup = ~councilPopup(caption),
-               group = "markets",
+               group = ~type,
                fillOpacity = 1,
                weight = 40,
                opacity = 0) %>%
     addLegend(pal = pal, values = ~ type,
               title = "", position = "bottomleft") %>%
-    # addSearchGoogle(apikey = 'AIzaSyD82n6fe0gU05Fv4G3HUlYbYDMq1cOUS9U', options = list(position = "topright", collapsed = FALSE, zoom = 14, marker = TRUE)) %>% 
     addControlGPS(options = gpsOptions(autoCenter = TRUE, setView = TRUE, maxZoom = 14)) %>% 
+    addLayersControl(overlayGroups = ~unique(type), position = "bottomright", options = layersControlOptions(collapsed = FALSE, sortLayers = "false")) %>% 
     setView(mean(bounds[c(1,3)]), mean(bounds[c(2,4)]), zoom = 10.5) %>% 
     registerPlugin(geocoder) %>% 
     registerPlugin(fontawsome_markers) %>% 
