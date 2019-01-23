@@ -8,10 +8,11 @@ library(htmlwidgets)
 
 source("code/load_farmers_boxes.R")
 source("code/util.R")
+source("code/just_food_scrape.R")
+source("code/local_roots.R")
 
-pal <- colorFactor(nycc_pal("cool")(2), domain = markets_boxes$service_type)
 
-make_caption <- function(facilityname,
+make_caption_dohmh <- function(facilityname,
                          hours,
                          website,
                          start,
@@ -21,7 +22,6 @@ make_caption <- function(facilityname,
   
   if (!is.na(website)){
     out <- paste(
-      #"<div style=\"font-family:'Open Sans', sans-serif;\">",
       "<h4><a href='", website, "' target='_blank'>", facilityname, "</a></h4>",
       "<small><em>", start, "-",  end, "<br>", address, "</em></small>",
       "<hr>", 
@@ -32,7 +32,6 @@ make_caption <- function(facilityname,
     )
   } else {
     out <- paste(
-      #"<div style=\"font-family:'Open Sans', sans-serif;\">",
       "<h4>", facilityname, "</h4>",
       "<small><em>", start, "-",  end, "<br>", address, "</em></small>",
       "<hr>", 
@@ -47,7 +46,7 @@ make_caption <- function(facilityname,
 }
 
 
-to_map <- markets_boxes %>% 
+dohmh <- markets_boxes %>% 
   # as_tibble() %>% 
   mutate_at(vars(sunday, monday, tuesday, wednesday, thursday, friday, saturday), as.character) %>% 
   mutate(hours = pmap(list(sunday, monday, tuesday, wednesday, thursday, friday, saturday), 
@@ -73,19 +72,45 @@ to_map <- markets_boxes %>%
                                  accepts_ebt), make_caption)) 
 
 
+make_caption_jf <- function(title, website, address, desc) {
+  paste(
+    "<h4><a href='", website, "' target='_blank'>", title, "</a></h4>",
+    "<small><em>", address, "<br>", desc, "</em></small>"
+  )
+}
+
+just_food <- just_food_raw %>% 
+  filter(active == 1, !str_detect(tags, "Farmer / Producer")) %>% 
+  select(loc_lat, loc_long, name, description, streetaddress, type = tags, website) %>% 
+  mutate(website = paste0("https://www.justfood.org", website),
+         caption = pmap_chr(list(name, website, streetaddress, description), make_caption_jf)) %>% 
+  st_as_sf(coords = c("loc_long", "loc_lat"), crs = st_crs(dohmh))
+
+to_map <- dohmh %>% 
+  select(caption, type = service_type) %>% 
+  rbind(just_food %>% select(caption, type)) %>% 
+  mutate(type = case_when(
+    type == "CSA site" ~ "CSAs",
+    type == "Farmers Market Site" ~ "Farmers Markets",
+    TRUE ~ type
+  )) 
+
+pal <- colorFactor(nycc_pal()(3), domain = to_map$type)
+
+
 bounds <- st_bbox(to_map)
 names(bounds) <- NULL
 
 (market_map <- to_map %>% 
     leaflet() %>% 
     addCouncilStyle() %>% 
-    addCircleMarkers(color = ~pal(service_type), radius = 4,
+    addCircleMarkers(color = ~pal(type), radius = 4,
                popup = ~councilPopup(caption),
                group = "markets",
                fillOpacity = 1,
-               weight = 50,
+               weight = 40,
                opacity = 0) %>%
-    addLegend(pal = pal, values = ~ service_type,
+    addLegend(pal = pal, values = ~ type,
               title = "", position = "bottomleft") %>%
     # addSearchGoogle(apikey = 'AIzaSyD82n6fe0gU05Fv4G3HUlYbYDMq1cOUS9U', options = list(position = "topright", collapsed = FALSE, zoom = 14, marker = TRUE)) %>% 
     addControlGPS(options = gpsOptions(autoCenter = TRUE, setView = TRUE, maxZoom = 14)) %>% 
