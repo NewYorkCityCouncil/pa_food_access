@@ -115,3 +115,6 @@ unlink("results/market_map_files/", recursive = TRUE)
 file.rename("market_map.html", "results/market_map.html")
 file.rename("market_map_files", "results/market_map_files")
 
+to_map %>% 
+  filter(type == "Farmers Markets") %>% 
+  summarize(n = n())
