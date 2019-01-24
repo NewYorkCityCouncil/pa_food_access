@@ -96,7 +96,7 @@ names(bounds) <- NULL
                popup = ~councilPopup(caption),
                group = ~type,
                fillOpacity = 1,
-               weight = 40,
+               weight = 30,
                opacity = 0) %>%
     addLegend(pal = pal, values = ~ type,
               title = "", position = "bottomleft") %>%

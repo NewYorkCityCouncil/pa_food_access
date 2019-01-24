@@ -35,13 +35,14 @@ get_benefits <- function(url) {
 make_caption_jf <- function(title, website, address, desc, benefit) {
   out <- paste(
     "<h4><a href='", website, "' target='_blank'>", title, "</a></h4>",
-    "<small><em>", address, "<br>", desc, "</em></small>"
+    "<small><em>", address, "<br>", desc, "</em></small>",
+    "<hr>",
+    "<strong>Dates & hours</strong>: Contact for more information"
   )
   
   if(!is.na(benefit)) {
     out <- paste(out,
-                 "<hr>",
-                 "<strong>Benefits accepted</strong>:", benefit)
+                 "<br><strong>Benefits accepted</strong>:", benefit)
   }
   
   return(out)
