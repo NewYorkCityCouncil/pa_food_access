@@ -10,6 +10,7 @@ source("code/load_farmers_boxes.R")
 source("code/util.R")
 source("code/just_food_scrape.R")
 source("code/local_roots.R")
+source("code/pantries.R")
 
 
 make_caption_dohmh <- function(facilityname,
@@ -26,7 +27,7 @@ make_caption_dohmh <- function(facilityname,
       "<small><em>", start, "-",  end, "<br>", address, "</em></small>",
       "<hr>", 
       knitr::kable(hours, format = "html"), "<br>",
-      "EBT:", ifelse(accepts_ebt, "Yes", "No")
+      "<strong>SNAP</strong>:", ifelse(accepts_ebt, "Yes", "No")
       #,
       #"</div>"
     )
@@ -36,7 +37,7 @@ make_caption_dohmh <- function(facilityname,
       "<small><em>", start, "-",  end, "<br>", address, "</em></small>",
       "<hr>", 
       knitr::kable(hours, format = "html"), "<br>",
-      "EBT:", ifelse(accepts_ebt, "Yes", "No")
+      "<strong>SNAP</strong>:", ifelse(accepts_ebt, "Yes", "No")
       #,
       # "</div>"
     )
@@ -84,9 +85,10 @@ to_map <- dohmh %>%
     type == "Farmers Market Site" ~ "Farmers Markets",
     TRUE ~ type
   )) %>% 
-  rbind(local_roots)
+  rbind(local_roots) %>% 
+  rbind(pantries)
 
-pal <- colorFactor(nycc_pal()(3), domain = to_map$type)
+pal <- colorFactor(nycc_pal()(4), domain = to_map$type)
 
 
 bounds <- st_bbox(to_map)
