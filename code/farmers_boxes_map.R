@@ -69,23 +69,11 @@ dohmh <- markets_boxes %>%
                                  start,
                                  end,
                                  address,
-                                 accepts_ebt), make_caption)) 
+                                 accepts_ebt), make_caption_dohmh)) 
 
 
-make_caption_jf <- function(title, website, address, desc) {
-  paste(
-    "<h4><a href='", website, "' target='_blank'>", title, "</a></h4>",
-    "<small><em>", address, "<br>", desc, "</em></small>"
-  )
-}
-
-just_food <- just_food_raw %>% 
-  filter(active == 1, !str_detect(tags, "Farmer / Producer")) %>% 
-  select(loc_lat, loc_long, name, description, streetaddress, type = tags, website) %>% 
-  mutate(website = paste0("https://www.justfood.org", website),
-         caption = pmap_chr(list(name, website, streetaddress, description), make_caption_jf)) %>% 
+just_food <- just_food %>% 
   st_as_sf(coords = c("loc_long", "loc_lat"), crs = st_crs(dohmh))
-
 to_map <- dohmh %>% 
   select(caption, type = service_type) %>% 
   rbind(just_food %>% select(caption, type)) %>% 
