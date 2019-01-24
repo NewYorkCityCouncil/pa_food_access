@@ -74,14 +74,17 @@ dohmh <- markets_boxes %>%
 
 just_food <- just_food %>% 
   st_as_sf(coords = c("loc_long", "loc_lat"), crs = st_crs(dohmh))
+
+
 to_map <- dohmh %>% 
   select(caption, type = service_type) %>% 
-  rbind(just_food %>% select(caption, type)) %>% 
+  rbind(just_food %>% select(caption, type)) %>%
   mutate(type = case_when(
     type == "CSA site" ~ "CSAs",
     type == "Farmers Market Site" ~ "Farmers Markets",
     TRUE ~ type
-  )) 
+  )) %>% 
+  rbind(local_roots)
 
 pal <- colorFactor(nycc_pal()(3), domain = to_map$type)
 
