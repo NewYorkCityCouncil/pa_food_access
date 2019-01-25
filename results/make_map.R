@@ -31,31 +31,41 @@ pal <- colorFactor(nycc_pal()(4), domain = to_map$type)
 bounds <- st_bbox(to_map)
 names(bounds) <- NULL
 
-(market_map <- to_map %>% 
-    leaflet() %>% 
-    addCouncilStyle() %>% 
-    addCircleMarkers(color = ~pal(type), radius = 4,
-               popup = ~councilPopup(caption),
-               group = ~type,
-               fillOpacity = 1,
-               weight = 30,
-               opacity = 0) %>%
-    addLegend(pal = pal, values = ~ type,
-              title = "", position = "bottomleft") %>%
-    addControlGPS(options = gpsOptions(autoCenter = TRUE, setView = TRUE, maxZoom = 14)) %>% 
-    addLayersControl(overlayGroups = ~unique(type), position = "bottomright", options = layersControlOptions(collapsed = FALSE, sortLayers = "false")) %>% 
-    setView(mean(bounds[c(1,3)]), mean(bounds[c(2,4)]), zoom = 10.5) %>% 
-    registerPlugin(geocoder) %>% 
-    registerPlugin(fontawsome_markers) %>% 
-    onRender(geocode_js, data = list(key = Sys.getenv("GEOCODE_API_KEY"))) %>%
-    prependContent(tags$link(href = "https://use.fontawesome.com/releases/v5.0.8/css/all.css", rel = "stylesheet")) %>% 
-    identity()
-)
+make_map <- function(mobile) {
+  stroke <- ifelse(mobile, 40, 0)
+  
+  (market_map <- to_map %>% 
+      leaflet() %>% 
+      addCouncilStyle() %>% 
+      addCircleMarkers(color = ~pal(type), radius = 4,
+                 popup = ~councilPopup(caption),
+                 group = ~type,
+                 fillOpacity = 1,
+                 weight = stroke,
+                 opacity = 0) %>%
+      addLegend(pal = pal, values = ~ type,
+                title = "", position = "bottomleft") %>%
+      addControlGPS(options = gpsOptions(autoCenter = TRUE, setView = TRUE, maxZoom = 14)) %>% 
+      addLayersControl(overlayGroups = ~unique(type), position = "bottomright", options = layersControlOptions(collapsed = FALSE, sortLayers = "false")) %>% 
+      setView(mean(bounds[c(1,3)]), mean(bounds[c(2,4)]), zoom = 10.5) %>% 
+      registerPlugin(geocoder) %>% 
+      registerPlugin(fontawsome_markers) %>% 
+      onRender(geocode_js, data = list(key = Sys.getenv("GEOCODE_API_KEY"))) %>%
+      prependContent(tags$link(href = "https://use.fontawesome.com/releases/v5.0.8/css/all.css", rel = "stylesheet")) %>% 
+      identity()
+  )
+  
+  file_base <- "market_map"
+  if(mobile) file_base <- paste0(file_base, "_mobile")
+  
+  htmlwidgets::saveWidget(market_map, paste0(file_base, ".html"), selfcontained = FALSE)
+  unlink(paste0("results/", file_base, "_files/"), recursive = TRUE)
+  file.rename(paste0(file_base, ".html"), paste0("results/", file_base, ".html"))
+  file.rename(paste0(file_base, "_files/"), paste0("results/", file_base, "_files/"))
+}
 
-htmlwidgets::saveWidget(market_map, "market_map.html", selfcontained = FALSE)
-unlink("results/market_map_files/", recursive = TRUE)
-file.rename("market_map.html", "results/market_map.html")
-file.rename("market_map_files", "results/market_map_files")
+make_map(mobile = FALSE)
+make_map(mobile = TRUE)
 
 to_map %>% 
   filter(type == "Farmers Markets") %>% 
