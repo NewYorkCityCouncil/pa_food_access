@@ -47,7 +47,7 @@ make_map <- function(mobile) {
                 title = "", position = "bottomleft") %>%
       addControlGPS(options = gpsOptions(autoCenter = TRUE, setView = TRUE, maxZoom = 14)) %>% 
       addLayersControl(overlayGroups = ~unique(type), position = "bottomright", options = layersControlOptions(collapsed = FALSE, sortLayers = "false")) %>% 
-      setView(mean(bounds[c(1,3)]), mean(bounds[c(2,4)]), zoom = 10.5) %>% 
+      setView(-73.88099670410158,40.72540497175607,  zoom = 10.5) %>% 
       registerPlugin(geocoder) %>% 
       registerPlugin(fontawsome_markers) %>% 
       onRender(geocode_js, data = list(key = Sys.getenv("GEOCODE_API_KEY"))) %>%
@@ -62,11 +62,13 @@ make_map <- function(mobile) {
   unlink(paste0("results/", file_base, "_files/"), recursive = TRUE)
   file.rename(paste0(file_base, ".html"), paste0("results/", file_base, ".html"))
   file.rename(paste0(file_base, "_files/"), paste0("results/", file_base, "_files/"))
+  
+  market_map
 }
 
 make_map(mobile = FALSE)
 make_map(mobile = TRUE)
 
 to_map %>% 
-  filter(type == "Farmers Markets") %>% 
+  # filter(type == "Farmers Markets") %>% 
   summarize(n = n())
