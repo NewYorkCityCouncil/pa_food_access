@@ -16,7 +16,7 @@ make_caption_pantry <- function(facilityname,
       "<small><em>", calendar, "<br>", address, "<br>", description, "</em></small>",
       "<hr>", 
       "<strong>Days open:</strong>", day_hours, "<br>",
-      "<strong>SNAP</strong>:", ifelse(str_detect(ebt, "EBT"), "Yes", "No")
+      "<strong>SNAP</strong>:", ifelse(str_detect(ebt, "Ebt"), "Yes", "No")
     )
   
   return(out)
