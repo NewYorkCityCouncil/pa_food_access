@@ -32,7 +32,7 @@ bounds <- st_bbox(to_map)
 names(bounds) <- NULL
 
 make_map <- function(mobile) {
-  stroke <- ifelse(mobile, 40, 0)
+  stroke <- ifelse(mobile, 40, 20)
   
   (market_map <- to_map %>% 
       leaflet() %>% 
