@@ -29,6 +29,6 @@ pantries <- pantries_raw %>%
   mutate_if(is.character, ~str_trim(tools::toTitleCase(tolower(.)))) %>% 
   mutate(Days = str_remove_all(pantries_raw$Days, "\\\\n"),
          caption = pmap_chr(list(Food.Pantry, Days, Calendar, address, location_desc, Programs), make_caption_pantry),
-         type = "Food Pantry") %>% 
+         type = "Fresh Pantry Project") %>% 
   st_as_sf(coords = c("longitude", "latitude"), crs = "+proj=longlat +datum=WGS84 +no_defs") %>% 
   select(caption, type)
