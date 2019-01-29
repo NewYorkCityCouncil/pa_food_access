@@ -30,7 +30,6 @@ cols <- c( "#0f518a",
            "#e69500",
            "#ffc14d")
 
-cols <- c('#a6cee3','#1f78b4','#b2df8a','#33a02c')
 
 pal <- colorFactor(cols, domain = to_map$type)
 
