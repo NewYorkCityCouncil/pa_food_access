@@ -25,7 +25,14 @@ to_map <- dohmh %>%
   rbind(local_roots) %>% 
   rbind(pantries)
 
-pal <- colorFactor(nycc_pal()(4), domain = to_map$type)
+cols <- c( "#0f518a",
+           "#8cc3f2",
+           "#e69500",
+           "#ffc14d")
+
+cols <- c('#a6cee3','#1f78b4','#b2df8a','#33a02c')
+
+pal <- colorFactor(cols, domain = to_map$type)
 
 
 bounds <- st_bbox(to_map)
