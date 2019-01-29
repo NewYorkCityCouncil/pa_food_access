@@ -50,7 +50,7 @@ make_map <- function(mobile) {
                  weight = stroke,
                  opacity = 0) %>%
       addLegend(pal = pal, values = ~ type,
-                title = "", position = "bottomleft") %>%
+                title = "", position = "bottomleft", opacity = 1) %>%
       addControlGPS(options = gpsOptions(autoCenter = TRUE, setView = TRUE, maxZoom = 14)) %>% 
       addLayersControl(overlayGroups = ~unique(type), position = "bottomright", options = layersControlOptions(collapsed = FALSE, sortLayers = "false")) %>% 
       setView(-73.88099670410158,40.72540497175607,  zoom = 10.5) %>% 
