@@ -29,12 +29,15 @@ cols <- c( "#0f518a",
            "#8cc3f2",
            "#e69500",
            "#ffc14d")
-
-
-labels <- paste0("<div style='background-color:", 
-                 cols, 
-                 ";float: left;width: 1em;height: 1em;margin: 3px;'></div>", 
+labels <- paste0("<div style='background-color:",
+                 cols,
+                 ";position: relative; right:2px; top: 4px; display: inline-block; width: 1em;height: 1em; margin: 2px;'></div>",
                  sort(unique(to_map$type)))
+
+# labels <- paste0("<div style='background-color:",
+#                  cols,
+#                  ";float: left;width: 1em;height: 1em;margin: 3px;'></div>",
+#                  sort(unique(to_map$type)))
 names(labels) <- sort(unique(to_map$type))
 
 
@@ -85,3 +88,5 @@ make_map(mobile = TRUE)
 to_map %>% 
   # filter(type == "Farmers Markets") %>% 
   summarize(n = n())
+
+   
