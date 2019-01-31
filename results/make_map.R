@@ -31,6 +31,13 @@ cols <- c( "#0f518a",
            "#ffc14d")
 
 
+labels <- paste0("<div style='background-color:", 
+                 cols, 
+                 ";float: left;width: 1em;height: 1em;margin: 3px;'></div>", 
+                 sort(unique(to_map$type)))
+names(labels) <- sort(unique(to_map$type))
+
+
 pal <- colorFactor(cols, domain = to_map$type)
 
 
@@ -45,17 +52,17 @@ make_map <- function(mobile) {
       addCouncilStyle() %>% 
       addCircleMarkers(color = ~pal(type), radius = 4,
                  popup = ~councilPopup(caption),
-                 group = ~type,
+                 group = ~unname(labels[type]),
                  fillOpacity = 1,
                  weight = stroke,
                  opacity = 0) %>%
-      addLegend(pal = pal, values = ~ type,
-                title = "", position = "bottomleft", opacity = 1) %>%
-      addControlGPS(options = gpsOptions(autoCenter = TRUE, setView = TRUE, maxZoom = 14)) %>% 
-      addLayersControl(overlayGroups = ~unique(type), position = "bottomright", options = layersControlOptions(collapsed = FALSE, sortLayers = "false")) %>% 
+      # addLegend(pal = pal, values = ~ type,
+      #           title = "", position = "bottomleft", opacity = 1) %>%
+      # addControlGPS(options = gpsOptions(autoCenter = TRUE, setView = TRUE, maxZoom = 14)) %>% 
+      addLayersControl(overlayGroups = ~unname(labels), position = "bottomright", options = layersControlOptions(collapsed = FALSE, sortLayers = "false")) %>% 
       setView(-73.88099670410158,40.72540497175607,  zoom = 10.5) %>% 
       registerPlugin(geocoder) %>% 
-      registerPlugin(fontawsome_markers) %>% 
+      # registerPlugin(fontawsome_markers) %>% 
       onRender(geocode_js, data = list(key = Sys.getenv("GEOCODE_API_KEY"))) %>%
       prependContent(tags$link(href = "https://use.fontawesome.com/releases/v5.0.8/css/all.css", rel = "stylesheet")) %>% 
       identity()
