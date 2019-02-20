@@ -25,6 +25,11 @@ to_map <- dohmh %>%
   rbind(local_roots) %>% 
   rbind(pantries)
 
+to_map <-  to_map %>%
+  filter(type != "Farmer or Producer") %>% 
+  mutate(type = case_when(type == "Community- Run Farmers Market Site" ~ "Farmers Markets",
+                          TRUE ~ type))
+
 cols <- c( "#0f518a",
            "#8cc3f2",
            "#e69500",
@@ -50,7 +55,7 @@ names(bounds) <- NULL
 make_map <- function(mobile) {
   stroke <- ifelse(mobile, 40, 10)
   
-  (market_map <- to_map %>% 
+  (market_map <- to_map %>%
       leaflet() %>% 
       addCouncilStyle() %>% 
       addCircleMarkers(color = ~pal(type), radius = 4,
